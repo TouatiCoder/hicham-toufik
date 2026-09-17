@@ -1,0 +1,89 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum ContentStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum MediaType {
+  TV
+  INTERVIEW
+  LECTURE
+  CONFERENCE
+}
+
+model Category {
+  id        String    @id @default(cuid())
+  name      String
+  slug      String    @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  contents  Content[]
+}
+
+model Tag {
+  id        String      @id @default(cuid())
+  name      String
+  slug      String      @unique
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  contents  ContentTag[]
+}
+
+model Content {
+  id          String        @id @default(cuid())
+  type        String
+  title       String
+  slug        String        @unique
+  excerpt     String?       @db.Text
+  body        String?       @db.LongText
+  coverImage  String?
+  year        Int?
+  status      ContentStatus @default(DRAFT)
+  featured    Boolean       @default(false)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  publishedAt DateTime?
+  categoryId  String?
+  category    Category?     @relation(fields: [categoryId], references: [id])
+  tags        ContentTag[]
+  media       Media[]
+}
+
+model ContentTag {
+  contentId String
+  tagId     String
+  content   Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  tag       Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([contentId, tagId])
+}
+
+model Media {
+  id        String    @id @default(cuid())
+  title     String
+  type      MediaType
+  sourceUrl String?  @db.Text
+  imageUrl  String?
+  date      DateTime?
+  contentId String?
+  content   Content?  @relation(fields: [contentId], references: [id], onDelete: SetNull)
+  createdAt DateTime  @default(now())
+}
+
+model AdminUser {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
