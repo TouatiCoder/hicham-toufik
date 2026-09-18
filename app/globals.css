@@ -1,0 +1,8 @@
+@import "tailwindcss";
+
+:root{--bg:#f7f4ee;--surface:#fffdfa;--ink:#202623;--muted:#727671;--accent:#6f4f3a;--border:#ddd7ce}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Arial,"Noto Sans Arabic",sans-serif}
+a{text-decoration:none;color:inherit}
+::selection{background:#e9dfd2}
